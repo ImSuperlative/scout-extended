@@ -41,13 +41,38 @@ final class ObjectIdEncrypter
     {
         $scoutKey = method_exists($searchable, 'getScoutKey') ? $searchable->getScoutKey() : $searchable->getKey();
 
-        $meta = [get_class($searchable->getModel()), $scoutKey];
+        $meta = [self::encryptMap(get_class($searchable->getModel())), $scoutKey];
 
         if ($part !== null) {
             $meta[] = $part;
         }
 
         return implode(self::$separator, $meta);
+    }
+
+    /**
+     * @param  mixed $class
+     *
+     * @return string
+     */
+    public static function encryptMap($class): string
+    {
+        $config = config('scout.algolia.map', []);
+        $search = array_search($class, $config);
+
+        return $search ?: $class;
+    }
+
+    /**
+     * @param  string $class
+     *
+     * @return string
+     */
+    public static function decryptMap(string $class): string
+    {
+        $config = config('scout.algolia.map', []);
+
+        return array_key_exists($class, $config) ? $config[$class] : $class;
     }
 
     /**
@@ -67,7 +92,7 @@ final class ObjectIdEncrypter
      */
     public static function decryptSearchable(string $objectId): string
     {
-        return (string) self::getSearchableExploded($objectId)[0];
+        return (string) self::decryptMap(self::getSearchableExploded($objectId)[0]);
     }
 
     /**

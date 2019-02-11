@@ -76,7 +76,8 @@ final class ModelsResolver
 
         foreach ($ids as $id) {
             foreach ($instances as $instance) {
-                if (ObjectIdEncrypter::encrypt($instance) === ObjectIdEncrypter::withoutPart($id)) {
+                //if (ObjectIdEncrypter::encrypt($instance) === ObjectIdEncrypter::withoutPart($id)) {
+                if (ObjectIdEncrypter::encrypt($instance) === $id) {
                     $result->push($instance);
                     break;
                 }
